@@ -32,6 +32,7 @@ VOID EkkoObf( DWORD SleepTime )
 
     NtContinue  = GetProcAddress( GetModuleHandleA( "Ntdll" ), "NtContinue" );
     SysFunc032  = GetProcAddress( LoadLibraryA( "Advapi32" ),  "SystemFunction032" );
+    SysFunc033  = GetProcAddress( LoadLibraryA( "Advapi32" ),  "SystemFunction033" );
 
     ImageBase   = GetModuleHandleA( NULL );
     ImageSize   = ( ( PIMAGE_NT_HEADERS ) ( ImageBase + ( ( PIMAGE_DOS_HEADER ) ImageBase )->e_lfanew ) )->OptionalHeader.SizeOfImage;
@@ -75,7 +76,7 @@ VOID EkkoObf( DWORD SleepTime )
 
         // SystemFunction032( &Key, &Img );
         RopMemDec.Rsp  -= 8;
-        RopMemDec.Rip   = SysFunc032;
+        RopMemDec.Rip   = SysFunc033;
         RopMemDec.Rcx   = &Img;
         RopMemDec.Rdx   = &Key;
 
@@ -95,11 +96,11 @@ VOID EkkoObf( DWORD SleepTime )
         puts( "[INFO] Queue timers" );
 
         CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRW, 100, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemEnc, 200, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopDelay,  300, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemDec, 400, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRX, 500, 0, WT_EXECUTEINTIMERTHREAD );
-        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopSetEvt, 600, 0, WT_EXECUTEINTIMERTHREAD );
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemEnc, 300, 0, WT_EXECUTEINTIMERTHREAD );
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopDelay,  500, 0, WT_EXECUTEINTIMERTHREAD );
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopMemDec, 700, 0, WT_EXECUTEINTIMERTHREAD );
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopProtRX, 900, 0, WT_EXECUTEINTIMERTHREAD );
+        CreateTimerQueueTimer( &hNewTimer, hTimerQueue, NtContinue, &RopSetEvt, 1000, 0, WT_EXECUTEINTIMERTHREAD );
 
         puts( "[INFO] Wait for hEvent" );
 
