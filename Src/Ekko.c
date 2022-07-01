@@ -26,6 +26,7 @@ VOID EkkoObf( DWORD SleepTime )
 
     PVOID   NtContinue  = NULL;
     PVOID   SysFunc032  = NULL;
+	PVOID   SysFunc033  = NULL;
 
     hEvent      = CreateEventW( 0, 0, 0, 0 );
     hTimerQueue = CreateTimerQueue();
